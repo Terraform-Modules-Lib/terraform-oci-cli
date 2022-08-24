@@ -35,7 +35,7 @@ resource "null_resource" "oci_cli_installer" {
   triggers = {
     run_every_time = timestamp()
     
-    command = "${local_file.oci_cli_installer.filename} --accept-all-defaults"
+    command = "${local_file.oci_cli_installer.filename} --accept-all-defaults && find . -name oci -type f -executable -nowarn -exec ln -s '{}' \;"
   }
   
   provisioner "local-exec" {
@@ -69,7 +69,7 @@ resource "null_resource" "oci_cli_test" {
   triggers = {
     run_every_time = timestamp()
     
-    command = "oci --config-file ${local_file.oci_cli_config_file.filename} iam compartment list"
+    command = "./oci --config-file ${local_file.oci_cli_config_file.filename} iam compartment list"
   }
   
   provisioner "local-exec" {
