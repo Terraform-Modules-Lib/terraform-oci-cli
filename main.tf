@@ -41,8 +41,9 @@ resource "local_file" "oci_cli_installer" {
 }
 
 resource "null_resource" "oci_cli_installer" {
+  
   triggers = {
-    run_every_time = timestamp()
+    commands = length(var.commands)
     
     command = "${local_file.oci_cli_installer.filename} --accept-all-defaults"
   }
@@ -77,12 +78,10 @@ resource "local_file" "oci_cli_config_file" {
 }
 
 resource "null_resource" "oci_cli_commands" {
-  for_each = {
-    kube = "ce cluster generate-token --cluster-id ocid1.cluster.oc1.eu-milan-1.aaaaaaaazgiu767r6zemniflq32mfbznm4bu6uuwfmnhet3igccxays35h3q --region eu-milan-1"
-  }
+  for_each = var.commands
   
   triggers = {
-    run_every_time = timestamp()
+    commands = length(var.commands)
     
     oci_cli = local.oci_cli
     oci_cmd = each.key
