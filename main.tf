@@ -41,6 +41,7 @@ resource "local_file" "oci_cli_installer" {
 }
 
 resource "null_resource" "oci_cli_installer" {
+  count = length(var.commands) > 0 ? 1 : 0
   
   triggers = {
     commands = length(var.commands)
