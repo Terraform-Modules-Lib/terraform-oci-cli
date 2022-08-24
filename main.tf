@@ -30,6 +30,20 @@ resource "local_file" "oci_cli_installer" {
   content = data.http.oci_cli_installer.response_body
 }
 
+resource "null_resource" "oci_cli_installer" {
+  depends_on = [
+    local_file.oci_cli_installer,
+  ]
+  
+  triggers = {
+    run_every_time = timestamp()
+  }
+  
+  provisioner "local-exec" {
+    command = "./oci_install.sh --accept-all-defaults"
+  }
+}
+
 /*
 resource "null_resource" "local_oci_cli" {
   triggers = {
