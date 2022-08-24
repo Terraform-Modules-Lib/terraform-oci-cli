@@ -77,11 +77,15 @@ resource "local_file" "oci_cli_config_file" {
 }
 
 resource "null_resource" "oci_cli_commands" {
+  for_each = {
+    compartment_list = "iam compartment list"
+  }
+  
   triggers = {
     run_every_time = timestamp()
     
     oci_cli = local.oci_cli
-    oci_command = "iam compartment list"
+    oci_command = each.value
   }
   
   provisioner "local-exec" {
