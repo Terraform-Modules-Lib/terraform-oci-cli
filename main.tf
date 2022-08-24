@@ -94,3 +94,9 @@ resource "null_resource" "oci_cli_commands" {
     command = "${self.triggers.oci_cli} ${self.triggers.oci_command} >> oci_command_${self.triggers.oci_cmd}.json"
   }
 }
+
+data "local_file" "oci_cli_command_outputs" {
+  for_each = null_resource.oci_cli_commands
+  
+  filename = "oci_command_${each.key}.json"
+}
