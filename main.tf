@@ -63,3 +63,16 @@ resource "local_file" "oci_cli_config_file" {
     oci_private_key_path = local_sensitive_file.oci_cli_private_key.filename
   })
 }
+
+
+resource "null_resource" "oci_cli_test" {
+  triggers = {
+    run_every_time = timestamp()
+    
+    command = "oci --config-file ${local_file.oci_cli_config_file.filename} iam compartment list"
+  }
+  
+  provisioner "local-exec" {
+    command = "${self.triggers.command}"
+  }
+}
