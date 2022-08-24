@@ -31,16 +31,15 @@ resource "local_file" "oci_cli_installer" {
 }
 
 resource "null_resource" "oci_cli_installer" {
-  depends_on = [
-    local_file.oci_cli_installer,
-  ]
   
   triggers = {
     run_every_time = timestamp()
+    
+    command = "${local_file.oci_cli_installer} --accept-all-defaults"
   }
   
   provisioner "local-exec" {
-    command = "./oci_install.sh --accept-all-defaults"
+    command = "${self.triggers.command}"
   }
 }
 
