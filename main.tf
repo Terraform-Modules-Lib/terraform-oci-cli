@@ -42,11 +42,11 @@ resource "null_resource" "oci_cli_installer" {
   }
 }
 
-resource "local_file" "oci_cli_private_key" {
+resource "local_sensitive_file" "oci_cli_private_key" {
   depends_on = [
     null_resource.oci_cli_installer
   ]
   
   filename = "./.oci/oci.key"
-  sensitive_content = var.oci_private_key
+  content = var.oci_private_key
 }
