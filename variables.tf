@@ -25,5 +25,7 @@ variable "oci_region_name" {
 
 variable "commands" {
   type = map(string)
-  description = "(Required) A map of commands to execute by OCI Command Line Interface."
+  description = "(Optional) A map of commands to execute by OCI Command Line Interface."
+  
+  default = {}
 }
