@@ -22,3 +22,8 @@ variable "oci_region_name" {
   type = string
   description = "(Required) OCI region name"
 }
+
+variable "commands" {
+  type = map(string)
+  description = "(Required) A map of commands to execute by OCI Command Line Interface."
+}
