@@ -35,7 +35,7 @@ resource "null_resource" "oci_cli_installer" {
   triggers = {
     run_every_time = timestamp()
     
-    command = "${local_file.oci_cli_installer} --accept-all-defaults"
+    command = "${local_file.oci_cli_installer.filename} --accept-all-defaults"
   }
   
   provisioner "local-exec" {
