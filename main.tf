@@ -80,6 +80,7 @@ resource "null_resource" "oci_cli_commands" {
   for_each = {
     compartment_list = "iam compartment list"
     kube = "ce cluster generate-token --cluster-id ocid1.cluster.oc1.eu-milan-1.aaaaaaaazgiu767r6zemniflq32mfbznm4bu6uuwfmnhet3igccxays35h3q --region eu-milan-1"
+    kubeconfig = "ce cluster create-kubeconfig --cluster-id ocid1.cluster.oc1.eu-milan-1.aaaaaaaazgiu767r6zemniflq32mfbznm4bu6uuwfmnhet3igccxays35h3q --region eu-milan-1"
   }
   
   triggers = {
