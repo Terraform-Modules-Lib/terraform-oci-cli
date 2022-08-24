@@ -10,15 +10,24 @@ terraform {
       source = "hashicorp/local"
       version = "2.2.3"
     }
+    
+    http = {
+      source = "hashicorp/http"
+      version = "3.0.1"
+    }
   }
 }
 
 locals {
 }
 
+data "http" "oci_cli_installer" {
+  url = "https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh"
+}
+
 resource "local_file" "oci_cli_installer" {
   filename = "./oci_cli_installer.sh"
-  source = "https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh"
+  content = data.http.oci_cli_installer.response_body
 }
 
 /*
