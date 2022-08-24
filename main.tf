@@ -65,9 +65,22 @@ resource "local_file" "oci_cli_config_file" {
 }
 
 
-resource "null_resource" "oci_cli_test" {
+resource "null_resource" "oci_cli_configure" {
   triggers = {
     run_every_time = timestamp()
+    
+    #command = "$HOME/bin/oci --config-file ${local_file.oci_cli_config_file.filename} iam compartment list"
+    command = "$HOME/bin/oci setup repair-file-permissions --file ${local_file.oci_cli_config_file.filename}"
+  }
+  
+  provisioner "local-exec" {
+    command = "${self.triggers.command}"
+  }
+}
+
+resource "null_resource" "oci_cli_test" {
+  triggers = {
+    run_every_time = null_resource.oci_cli_configure.triggers.run_every_time
     
     command = "$HOME/bin/oci --config-file ${local_file.oci_cli_config_file.filename} iam compartment list"
   }
