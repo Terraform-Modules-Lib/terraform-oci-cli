@@ -19,14 +19,23 @@ terraform {
 }
 
 locals {
+  oci_installer_url = "https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh"
+  oci_installer_filename = "./oci_cli_installer.sh"
+  
+  oci_private_key_filename = "./.oci/oci.key"
+  oci_config_filename = "./.oci/config"
+  oci_config_templatename = "./oci_config_file.tftpl"
+  
+  oci_cli = "$HOME/bin/oci --config-file ${local_file.oci_cli_config_file.filename}"
 }
 
 data "http" "oci_cli_installer" {
-  url = "https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh"
+  url = local.oci_installer_url
 }
 
 resource "local_file" "oci_cli_installer" {
-  filename = "./oci_cli_installer.sh"
+  filename = local.oci_installer_filename
+  file_permission = "0700"
   
   content = data.http.oci_cli_installer.response_body
 }
@@ -48,17 +57,17 @@ resource "local_sensitive_file" "oci_cli_private_key" {
     null_resource.oci_cli_installer
   ]
   
-  filename = "./.oci/oci.key"
+  filename = local.oci_private_key_filename
   file_permission = "0600"
   
   content = var.oci_private_key
 }
 
 resource "local_file" "oci_cli_config_file" {
-  filename = "./.oci/config"
+  filename = local.oci_config_filename
   file_permission = "0600"
   
-  content = templatefile("./oci_config_file.tftpl", {
+  content = templatefile(local.oci_config_templatename, {
     oci_tenancy_ocid = var.oci_tenancy_id
     oci_region = var.oci_region_name
     oci_user_ocid = var.oci_user_id
@@ -67,14 +76,15 @@ resource "local_file" "oci_cli_config_file" {
   })
 }
 
-resource "null_resource" "oci_cli_test" {
+resource "null_resource" "oci_cli_commands" {
   triggers = {
     run_every_time = timestamp()
     
-    command = "$HOME/bin/oci --config-file ${local_file.oci_cli_config_file.filename} iam compartment list"
+    oci_cli = local.oci_cli
+    oci_command = "iam compartment list"
   }
   
   provisioner "local-exec" {
-    command = "${self.triggers.command}"
+    command = "${self.triggers.oci_cli} ${self.triggers.command}"
   }
 }
