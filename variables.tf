@@ -11,6 +11,8 @@ variable "oci_user_id" {
 variable "oci_private_key" {
   type = string
   description = "(Required) Oracle User PEM private key"
+  
+  sensitive = true
 }
 
 variable "oci_key_fingerprint" {
@@ -26,6 +28,13 @@ variable "oci_region_name" {
 variable "commands" {
   type = map(string)
   description = "(Optional) A map of commands to execute by OCI Command Line Interface."
+  
+  default = {}
+}
+
+variable "triggers" {
+  type = map(string)
+  description = "(Optional) A map of strings that will be used as a trigger for null_resource."
   
   default = {}
 }
