@@ -43,11 +43,10 @@ resource "local_file" "oci_cli_installer" {
 resource "null_resource" "oci_cli_installer" {
   count = length(var.commands) > 0 ? 1 : 0
   
-  triggers = {
-    commands = length(var.commands)
-    
+  triggers = merge({
     command = "${local_file.oci_cli_installer.filename} --accept-all-defaults"
-  }
+    
+  }, var.triggers)
   
   provisioner "local-exec" {
     command = "${self.triggers.command}"
@@ -81,13 +80,12 @@ resource "local_file" "oci_cli_config_file" {
 resource "null_resource" "oci_cli_commands" {
   for_each = var.commands
   
-  triggers = {
-    commands = length(var.commands)
-    
+  triggers = merge({
     oci_cli = local.oci_cli
     oci_cmd = each.key
     oci_command = each.value
-  }
+    
+  }, var.triggers)
   
   provisioner "local-exec" {
     command = "${self.triggers.oci_cli} ${self.triggers.oci_command} >> oci_command_${self.triggers.oci_cmd}.json"
