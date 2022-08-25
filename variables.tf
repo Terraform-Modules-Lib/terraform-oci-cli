@@ -31,10 +31,3 @@ variable "commands" {
   
   default = {}
 }
-
-variable "triggers" {
-  type = map(string)
-  description = "(Optional) A map of strings that will be used as a trigger for null_resource."
-  
-  default = {}
-}
