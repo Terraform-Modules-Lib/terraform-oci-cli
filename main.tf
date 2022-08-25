@@ -108,6 +108,7 @@ data "local_file" "oci_cli_commands" {
   lifecycle {
     precondition {
       condition = fileexists("oci_command_${each.key}.json")
+      error_message = "File not founds"
     }
   }
 }
