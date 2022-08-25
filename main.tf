@@ -100,14 +100,18 @@ resource "null_resource" "oci_cli_commands" {
   }
 }
 
+data "local_file" "oci_cli_commands" {
+  for_each = {
+    for oci_command_name, oci_command in null_resource.oci_cli_commands : oci_command_name => oci_command
+      if fileexists("oci_command_${oci_command_name}.json")
+  }
+  
+  filename = "oci_command_${each.key}.json"
+}
+
 locals {
-  oci_command_outputs = {
-    for oci_command_name, oci_command in null_resource.oci_cli_commands :
-      oci_command_name => jsondecode(
-        coalesce(
-          file("oci_command_${oci_command_name}.json"), 
-          "{}"
-        )
-      )
+  cli_output = {
+    for oci_command, oci_output in data.local_file.oci_cli_commands :
+        oci_command => jsondecode(oci_output)
   }
 }
