@@ -104,9 +104,9 @@ locals {
   oci_command_outputs = {
     for oci_command_name, oci_command in null_resource.oci_cli_commands :
       oci_command_name => jsondecode(
-        try(
+        coalesce(
           file("oci_command_${oci_command_name}.json"), 
-          ""
+          "{}"
         )
       )
   }
