@@ -117,6 +117,6 @@ data "local_file" "oci_cli_commands" {
 locals {
   cli_output = {
     for oci_command, oci_output in data.local_file.oci_cli_commands :
-        oci_command => jsondecode(oci_output)
+        oci_command => jsondecode(oci_output.content)
   }
 }
