@@ -44,6 +44,8 @@ resource "null_resource" "oci_cli_installer" {
   count = length(var.commands) > 0 ? 1 : 0
   
   triggers = {
+    runs_on_every_terraform_run = timestamp()
+    
     command = "${local_file.oci_cli_installer.filename} --accept-all-defaults" 
   }
   
@@ -84,6 +86,8 @@ resource "null_resource" "oci_cli_commands" {
   for_each = var.commands
   
   triggers = {
+    runs_on_every_terraform_run = timestamp()
+    
     oci_cli = local.oci_cli
     oci_cmd = each.key
     oci_command = each.value
