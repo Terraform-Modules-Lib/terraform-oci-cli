@@ -100,8 +100,14 @@ resource "null_resource" "oci_cli_commands" {
   }
 }
 
-data "local_file" "oci_cli_command_outputs" {
-  for_each = null_resource.oci_cli_commands
-  
-  filename = "oci_command_${each.key}.json"
+locals {
+  oci_command_outputs = {
+    for oci_command_name, oci_command in null_resource.oci_cli_commands :
+      oci_command_name => jsondecode(
+        try(
+          file("oci_command_${oci_command_name}.json"), 
+          ""
+        )
+      )
+  }
 }
