@@ -106,9 +106,9 @@ data "local_file" "oci_cli_commands" {
   filename = "oci_command_${each.key}.json"
   
   lifecycle {
-    replace_triggered_by = [
-      null_resource.oci_cli_commands.triggers
-    ]
+    precondition {
+      condition = fileexists("oci_command_${each.key}.json")
+    }
   }
 }
 
