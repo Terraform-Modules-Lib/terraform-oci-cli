@@ -20,11 +20,11 @@ terraform {
 
 locals {
   oci_installer_url = "https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh"
-  oci_installer_filename = "./oci_cli_installer.sh"
+  oci_installer_filename = "${path.module}/oci_cli_installer.sh"
   
-  oci_private_key_filename = "./.oci/oci.key"
-  oci_config_filename = "./.oci/config"
-  oci_config_templatename = "./oci_config_file.tftpl"
+  oci_private_key_filename = "${path.module}/.oci/oci.key"
+  oci_config_filename = "${path.module}/.oci/config"
+  oci_config_templatename = "${path.module}/oci_config_file.tftpl"
   
   oci_cli = "$HOME/bin/oci --config-file ${local_file.oci_cli_config_file.filename} --output json"
 }
@@ -95,14 +95,14 @@ resource "null_resource" "oci_cli_commands" {
   }
   
   provisioner "local-exec" {
-    command = "${self.triggers.oci_cli} ${self.triggers.oci_command} >> oci_command_${self.triggers.oci_cmd}.json"
+    command = "${self.triggers.oci_cli} ${self.triggers.oci_command} >> ${path.module}/oci_command_${self.triggers.oci_cmd}.json"
   }
   
   lifecycle {
     create_before_destroy = true
     
     postcondition {
-      condition = fileexists("oci_command_${self.triggers.oci_cmd}.json")
+      condition = fileexists("${path.module}/oci_command_${self.triggers.oci_cmd}.json")
       error_message = "Output file not founds"
     }
   }
@@ -111,7 +111,7 @@ resource "null_resource" "oci_cli_commands" {
 data "local_file" "oci_cli_commands" {
   for_each = null_resource.oci_cli_commands
   
-  filename = "oci_command_${each.key}.json"
+  filename = "${path.module}/oci_command_${each.key}.json"
 }
 
 locals {
