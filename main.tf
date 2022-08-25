@@ -43,10 +43,9 @@ resource "local_file" "oci_cli_installer" {
 resource "null_resource" "oci_cli_installer" {
   count = length(var.commands) > 0 ? 1 : 0
   
-  triggers = merge({
-    command = "${local_file.oci_cli_installer.filename} --accept-all-defaults"
-    
-  }, var.triggers)
+  triggers = {
+    command = "${local_file.oci_cli_installer.filename} --accept-all-defaults" 
+  }
   
   provisioner "local-exec" {
     command = "${self.triggers.command}"
@@ -84,12 +83,12 @@ resource "local_file" "oci_cli_config_file" {
 resource "null_resource" "oci_cli_commands" {
   for_each = var.commands
   
-  triggers = merge({
+  triggers = {
     oci_cli = local.oci_cli
     oci_cmd = each.key
     oci_command = each.value
     
-  }, var.triggers)
+  }
   
   provisioner "local-exec" {
     command = "${self.triggers.oci_cli} ${self.triggers.oci_command} >> oci_command_${self.triggers.oci_cmd}.json"
@@ -100,7 +99,7 @@ resource "null_resource" "oci_cli_commands" {
     
     postcondition {
       condition = fileexists("oci_command_${self.triggers.oci_cmd}.json")
-      error_message = "File not founds"
+      error_message = "Output file not founds"
     }
   }
 }
