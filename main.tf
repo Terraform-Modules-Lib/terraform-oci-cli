@@ -101,12 +101,15 @@ resource "null_resource" "oci_cli_commands" {
 }
 
 data "local_file" "oci_cli_commands" {
-  for_each = {
-    for oci_command_name, oci_command in null_resource.oci_cli_commands : oci_command_name => oci_command
-      if fileexists("oci_command_${oci_command_name}.json")
-  }
+  for_each = null_resource.oci_cli_commands
   
   filename = "oci_command_${each.key}.json"
+  
+  lifecycle {
+    replace_triggered_by = [
+      null_resource.oci_cli_commands.triggers
+    ]
+  }
 }
 
 locals {
