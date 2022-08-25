@@ -51,6 +51,10 @@ resource "null_resource" "oci_cli_installer" {
   provisioner "local-exec" {
     command = "${self.triggers.command}"
   }
+  
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "local_sensitive_file" "oci_cli_private_key" {
@@ -89,6 +93,10 @@ resource "null_resource" "oci_cli_commands" {
   
   provisioner "local-exec" {
     command = "${self.triggers.oci_cli} ${self.triggers.oci_command} >> oci_command_${self.triggers.oci_cmd}.json"
+  }
+  
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
