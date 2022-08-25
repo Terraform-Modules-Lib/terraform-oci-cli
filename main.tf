@@ -97,6 +97,11 @@ resource "null_resource" "oci_cli_commands" {
   
   lifecycle {
     create_before_destroy = true
+    
+    postcondition {
+      condition = fileexists("oci_command_${self.triggers.oci_cmd}.json")
+      error_message = "File not founds"
+    }
   }
 }
 
@@ -104,13 +109,6 @@ data "local_file" "oci_cli_commands" {
   for_each = null_resource.oci_cli_commands
   
   filename = "oci_command_${each.key}.json"
-  
-  lifecycle {
-    precondition {
-      condition = fileexists("oci_command_${each.key}.json")
-      error_message = "File not founds"
-    }
-  }
 }
 
 locals {
